@@ -1,0 +1,181 @@
+<template>
+  <div class="base-list">
+    <van-pull-refresh
+      :disabled="isRefresh"
+      v-model="isLoading"
+      @refresh="onRefresh"
+    >
+      <van-list
+        v-model="loading"
+        :finished="finished"
+        finished-text="没有更多数据啦"
+        @load="onLoad"
+      >
+        <!--          todo 建议将多次出现的设置为默认内容-->
+        <slot>
+          <van-cell-group v-if="mostlist">
+            <van-cell
+              @click="cellClick(item, $event)"
+              v-for="(item, index) in tableList"
+              :key="index"
+              :title="item[tableName.title] || '暂无信息'"
+              :label="item[tableName.label]"
+            >
+              <span
+                v-if="tableName.ids == 'patrolduty'"
+                :class="getStatusColor(item[tableName.value])"
+              >
+                {{
+                    (item[tableName.value] == 0 && "未指定") ||
+                    (item[tableName.value] == 1 && "正常") ||
+                    (item[tableName.value] == 2 && "故障") ||
+                    (item[tableName.value] == 3 && "故障") ||
+                    (item[tableName.value] == 4 && "未提交") 
+                }}
+              </span>
+              <!--              todo 插入头部-->
+              <slot slot="title" :item="item" name="cellTitle"> </slot>
+              <!--              todo 插入内容-->
+              <slot :item="item" name="cellValue"> </slot>
+              <!--              todo 插入label-->
+              <slot slot="label" :item="item" name="cellLabel"> </slot>
+            </van-cell>
+          </van-cell-group>
+          <van-cell-group v-else>
+            <van-cell v-for="(item, index) in tableList" :key="index">
+              <slot name="content" :item="item"></slot>
+            </van-cell>
+          </van-cell-group>
+        </slot>
+      </van-list>
+    </van-pull-refresh>
+  </div>
+</template>
+
+<script>
+/**   下拉刷新，上滑加载组件
+ *  作者：0          时间：2019/7/3 11:54
+ *  1,常量从js文件引入，不要定义魔术变量
+ */
+export default {
+  name: "BaseList",
+  components: {},
+  props: {
+    tableList: {
+      type: Array,
+      default() {
+        return [];
+      }
+    },
+    //  todo 字段的匹配名
+    tableName: {
+      type: Object,
+      default() {
+        return {};
+      }
+    },
+    mostlist: {
+      //为了设备终端列表显示
+      type: Boolean,
+      default() {
+        return true;
+      }
+    }
+  },
+  data() {
+    return {
+      isLoading: false,
+      loading: false,
+      finished: false
+    };
+  },
+  computed: {
+    // todo 能否刷新页面
+    isRefresh: function() {
+      let val = this.tableList.length < 10 ? true : false;
+      return val;
+    }
+  },
+  watch: {},
+  created() {
+  console.log("baselistName",this.tableName,this.tableList)
+  },
+  mounted() {
+  },
+  methods: {
+    /**
+     *@fileoverview 下拉刷新数据
+     * @param {Array} tables list中的数据
+     * @param {Object} page 分页对象
+     */
+    onRefresh() {
+      let that = this;
+      this.$emit("refresh", function success() {
+        that.isLoading = false;
+        that.$toast("刷新成功");
+      });
+    },
+    /**
+     * @fileoverview 上滑加载更多数据，使用回调函数来设置异步请求之后的操作、以下注释皆是回调函数的
+     * @param {Number} size 当前数据长度
+     * @param {Number} total 数据总数
+     */
+    onLoad() {
+      let that = this;
+      this.$emit("onLoad", function success(size, total = 5, page = {}) {
+        page.SkipCount = size;
+        that.loading = false;
+        if (size >= total) {
+          that.finished = true;
+        }
+      });
+    },
+    /**
+     * @fileOverview 行点击事件
+     * @param {Object} item 行的数据对象
+     * @param {Object} event 原生的点击事件
+     */
+    cellClick(item, event) {
+      this.$emit("cellClick", item, event);
+    },
+    getStatusColor(color){
+      if(color == 0){
+        return 'gray'
+      }else if(color == 1){
+        return 'normal'
+      }else if(color == 2){
+        return 'handle'
+      }else if(color == 3){
+        return 'notHandle'
+      }
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+.base-list {
+  /*.van-cell__title {*/
+  /*  flex: 2 0 auto;*/
+  /*}*/
+  /*设置最小宽度*/
+  .van-cell__value {
+    min-width: 70px;
+  }
+  .gray{
+    color: gainsboro;
+  }
+   /*正常*/
+  .normal {
+    color: #67c23a;
+  }
+  /*已解决正常*/
+  .handle {
+    color: #67c23a;
+  }
+  /*未解决*/
+  .notHandle {
+    color: #e6a23c;
+  }
+}
+</style>
