@@ -32,7 +32,8 @@ export default {
       type: Boolean,
       default: true
     },
-    active:''
+    active:'',
+    special:''
   },
   data() {
     return {};
@@ -45,12 +46,26 @@ export default {
     routerBack(){
       console.log("路径跳转",this.active,this.title)
       if(this.title == '设施故障处理中' ||this.title == '自行处理'   ||this.title == '维保叫修'|| this.title == '设置故障已解决'){
-        this.$router.push({
-          name:'fault',
-          params:{
-            active:this.active
+        if(this.title == '维保叫修'){
+          console.log("have路径跳转",this.special)
+          if(this.special == 5){
+            this.$router.push({
+              name:'fault',
+              params:{
+                active:this.active,
+                special:this.special
+              }
+            })
           }
-        })
+        }else{
+          this.$router.push({
+            name:'fault',
+            params:{
+              active:this.active
+            }
+          })
+        }
+        
         
       }else if(this.title == '值班记录' || this.title == '巡查记录'){
         console.log("sssss",this.active)

@@ -9,9 +9,9 @@ import api from "./plugins/api.js";
 import axios from "./plugins/axios.js";
 import Cookies from "js-cookie";
 import { Toast } from "vant";
-import VConsole from "vconsole";
-let vConsole = new VConsole();
-Vue.use(vConsole);
+// import VConsole from "vconsole";
+// let vConsole = new VConsole();
+// Vue.use(vConsole);
 
 Vue.use(Toast);
 

@@ -1,33 +1,50 @@
 <template>
   <div class="fault-detail">
-    <base-nav :title="title[active]" :active="active"></base-nav>
+    <base-nav v-if="active != 2 " :title="title[active]" :active="active"></base-nav>
+    <base-nav v-else :title="title[active]" :active="active" :special="have"></base-nav>
 
     <van-cell-group>
-      <van-cell
+     <!--  <van-cell
         class="flex-title"
         :title="form.userName"
         :value="$store.state.getAction[form.source]"
         :label="form.creationTime"
+      ></van-cell> -->
+      <van-cell  
+        class="flex-title"
+        :title="form.userName"
+        :value="$store.state.getAction[form.source]"
       ></van-cell>
+      <p class="timeBox">
+        <span v-if="active == 1">
+          派单时间：{{form.dispatchTime}}
+        </span>
+        <span v-if="active == 2">
+          派单时间：{{form.dispatchTime}}
+        </span>
+        <span >
+          发现时间：{{form.creationTime}}
+        </span>
+      </p>
 
       <!--      todo 建议抽离图片展示-->
       <van-cell title="问题描述">
         <div slot="label">
-          <div style="margin: 5px" v-show="form.problemRemakeType === 2">
+          <div style="margin: 5px" v-show="form.problemVoiceUrl">
             <!--        todo 播放声音-->
-            <base-play-sound :isEdit="1" :voice="form.voice"></base-play-sound>
+            <base-play-sound :isEdit="1" :time="form.voiceLength" :voice="form.problemVoiceUrl"></base-play-sound>
           </div>
-          <div v-show="form.problemRemakeType === 1" class="fault-detail-text">{{ form.remakeText }}</div>
+          <div v-show="form.problemRemark" class="fault-detail-text">{{ form.problemRemark }}</div>
           <shot-photo :truePhoto="form.truePhoto" v-model="form.photoList" :disabled="1"></shot-photo>
         </div>
       </van-cell>
-
+      <!-- 已解决 -->
       <div v-if="active === '3'">
         <van-cell title="解决时间" :value="form.solutionTime"></van-cell>
         <van-cell title="处理途径" :value="form.solutionWay === 1 ? '自行处理' : '维保叫修'"></van-cell>
-        <van-cell title="备注信息" :label="form.remark"></van-cell>
+        <van-cell title="备注信息" :label="form.solutionRemark"></van-cell>
       </div>
-
+     
       <van-cell v-if="active == '1'" title="问题处理">
         <div slot="label" class="fault-detail-label">
           <van-switch-cell
@@ -40,7 +57,7 @@
           <van-cell title="备注">
             <van-field
               slot="label"
-              v-model="form.remark"
+              v-model="form.solutionRemark"
               type="textarea"
               rows="6"
               placeholder="在这请输入您的备注信息"
@@ -63,7 +80,7 @@
           <van-cell title="备注">
             <van-field
               slot="label"
-              v-model="form.remark"
+              v-model="form.solutionRemark"
               type="textarea"
               rows="6"
               placeholder="在这请输入您的备注信息"
@@ -72,7 +89,7 @@
         </div>
       </van-cell>
       <!-- 待处理 -->
-      <van-cell v-if="active == '0'" title="问题处理">
+      <van-cell v-if="active == 0" title="问题处理">
         <div slot="label" class="fault-detail-label">
           <van-switch-cell v-model="handleStatus" title="是否已解决"></van-switch-cell>
           <van-cell title="问题处理途径">
@@ -86,7 +103,7 @@
           <van-cell title="备注">
             <van-field
               slot="label"
-              v-model="form.remark"
+              v-model="form.solutionRemark"
               type="textarea"
               rows="6"
               placeholder="在这请输入您的备注信息"
@@ -97,7 +114,10 @@
 
     </van-cell-group>
 
-    <base-button @click="submit" v-if="active !== '3'">提交</base-button>
+   
+    <base-button @click="submit" v-if="active == 0 && handleStatus == false">派单</base-button>
+    <base-button @click="submit" v-else-if="active == 0 && handleStatus == true">提交</base-button>
+    <base-button @click="submit" v-else-if="(active == 1 || active == 2)">提交</base-button>
   </div>
 </template>
 
@@ -143,22 +163,41 @@ export default {
     this.getDetail();
   },
   methods: {
-    // todo 更新设施故障、表单验证
+    // todo 更新设施故障、表单验证(设施故障待处理提交)
     submit() {
-      let f = this.form;
-      f.breakDownId = this.breakDownId;
-      f.handleStatus = this.handleStatus ? "3" : "2";
+      let f ={};
+      f.breakDownId = this.breakDownId
+      f.solutionWay = this.form.solutionWay
+      if(this.active == 0){
+        if(this.handleStatus && (this.form.solutionWay == 1|| this.form.solutionWay == 2)){
+          f.handleStatus = 3
+        }else if(!this.handleStatus && this.form.solutionWay == 1){
+          f.handleStatus = 4
+        }else if(!this.handleStatus && this.form.solutionWay == 2){
+          f.handleStatus = 5
+        }
+      }else if(this.active == 1){
+        if(this.handleStatus){
+          f.handleStatus = 3
+        }else {
+           f.handleStatus = 4
+        }
+      }else if(this.active == 2){
+        if(this.handleStatus){
+          f.handleStatus = 3
+        }else {
+           f.handleStatus = 5
+        }
+      }
+      
+      
+      f.solutionRemark = this.form.solutionRemark
      
       console.log("f",f)
       this.$axios.put(this.$api.UPDATE_BREAK_DOWN_INFO, f).then(res => {
-        if (res.success) {
-          if (res.result.success) {
-            this.$toast.success("保存成功");
-            this.$router.back();
-          } else {
-            this.$toast(res.result.failCause);
-          }
-        }
+        console.log("res",res)
+          this.$toast.success("保存成功");
+          this.$router.back();
       });
     },
     //  todo 获取设施故障详情
@@ -171,8 +210,15 @@ export default {
         .then(res => {
           console.log("res.success77777777777777777777777777777777777777",res)
           if (res.success) {
+            res.result.creationTime = this.deal( res.result.creationTime )
+            res.result.dispatchTime = this.deal( res.result.dispatchTime )
+            res.result.solutionTime = this.deal( res.result.solutionTime )
             this.form = res.result;
-         /*    this.form.solutionWay = this.form.solutionWay ? this.form.solutionWay : 1; */
+            /* this.form.handleStatus = this.form.handleStatus ? this.form.handleStatus : 4;
+            if( this.form.handleStatus == 1){
+              this.form.handleStatus =4
+            } */
+            this.form.solutionWay = this.form.solutionWay ? this.form.solutionWay : 1;
             //  遍历照片
             this.form.photoList = [];
             this.form.truePhoto = [];
@@ -181,20 +227,25 @@ export default {
               this.form.truePhoto.push(`${this.$url}${i}`);
             }
             //遍历缩略图
-             for (let i of res.result.photosBase64) {
+             for (let i of res.result.patrolPhotosBase64) {
               this.form.photoList.push(`data:image/;base64,${i}`);
             }
             console.log("this.form.photoList",this.form.photoList)
 
             //  语音、文字
-            if (this.form.problemRemakeType === 2) {
-              this.form.voice = `${this.$url}${this.form.remakeText}`;
-            } else {
-              this.form.content = `${this.remakeText}`;
-            }
+            if (this.form.problemVoiceUrl) {
+              this.form.problemVoiceUrl = `${this.$url}${this.form.problemVoiceUrl}`;
+            } 
           }
         });
-    }
+    },
+    //
+    deal(data){
+        var str = data.split('T');
+        var str2 = str[1].split(".")
+        var timestr = str[0] +" "+ str2[0]
+        return timestr;
+    },
   }
 };
 </script>
@@ -223,6 +274,17 @@ export default {
       .van-radio {
         height: 28px;
       }
+    }
+  }
+  .timeBox{
+    padding: 0.625rem 1rem;
+    font-size: 0.8rem;
+    color: #8a8a8a;
+    margin: 0px;
+    span{
+      display: block;
+      line-height: 1.5;
+
     }
   }
 }

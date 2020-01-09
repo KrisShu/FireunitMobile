@@ -8,7 +8,7 @@
     >
       <van-tab title="待处理"><index-tem :active="active"></index-tem></van-tab>
       <van-tab title="自行处理中"><index-tem :active="active"></index-tem></van-tab>
-      <van-tab title="维保处理中"><index-tem :active="active"></index-tem></van-tab>
+      <van-tab title="维保处理中"><index-tem :active="active" :special="special"></index-tem></van-tab>
       <van-tab title="已解决"><index-tem :active="active"></index-tem></van-tab>
     </van-tabs>
   </div>
@@ -29,6 +29,7 @@ export default {
   data() {
     return {
       active: 0,
+      special:'',
       info: {}
     };
   },
@@ -37,6 +38,7 @@ export default {
   created() {
     console.log("路由参数",this.$route.params)
     this.active = +this.$route.params.active
+    this.special = +this.$route.params.special
   },
   mounted() {},
   methods: {}

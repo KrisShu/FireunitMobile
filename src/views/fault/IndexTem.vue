@@ -1,26 +1,19 @@
 <template>
   <div class="index-tem">
-      <!--  <van-cell v-if="active !=2" :value="`${page.total}条`">
-        <van-dropdown-menu slot="title">
-          <van-dropdown-item
-            title="问题来源"
-            @change="getList"
-            v-model="page.Source"
-            :options="actions"
-          ></van-dropdown-item>
-        </van-dropdown-menu>
-      </van-cell> -->
       <!-- 菜单状态为维保叫修 -->
-      <!--    <van-cell v-if="active == 2" :value="`${page2.total}条`">
-        <van-dropdown-menu slot="title">
-          <van-dropdown-item
-            title="处理过程"
-            @change="getList"
-            v-model="page2.HandleStatus"
-            :options="actions2"
-          ></van-dropdown-item>
-        </van-dropdown-menu>
-      </van-cell> -->
+      <div class="top_screen" v-if="active == 2">
+        <van-button  
+          v-for="item in buttonarr"
+          :key="item.text"
+          plain
+          :type="item.type"
+          @click="screen(item.text)"
+        >
+            <van-icon v-if="screensign == item.text" name="star" />
+            {{item.text}}
+
+        </van-button>
+      </div>
 
     <base-list
       @cellClick="getDetail"
@@ -32,19 +25,19 @@
       <span slot="cellTitle" slot-scope="scope">
         {{ scope.item.userName }} ({{ scope.item.userPhone }})
       </span>
-      <span slot="cellValue" slot-scope="scope">{{
-        $store.state.getAction[scope.item.source]
-      }}</span>
-       <span v-if="pageTotal.HandleStatus == 6" slot="cellLabel" slot-scope="scope">{{timeType[6].label}}{{ scope.item[timeType[6].value] }}</span>
-      <span v-else slot="cellLabel" slot-scope="scope">{{timeType[active].label}}{{ scope.item[timeType[active].value] }}</span>
+      <span slot="cellValue" slot-scope="scope">
+        {{$store.state.getAction[scope.item.source]}}
+      </span>
+      <span v-if="pageTotal.HandleStatus == 6" slot="cellLabel" slot-scope="scope">
+        {{timeType[6].label}}{{ scope.item[timeType[6].value] }}
+      </span>
+      <div v-else slot="cellLabel" slot-scope="scope">
+       
+          {{timeType[active].label}}{{ scope.item[timeType[active].value] }}
+        <!-- 自行处理中 -->
+        <p v-if=" (active ==1 || active ==2)">{{timeType[0].label}}{{ scope.item[timeType[0].value] }}</p>
+      </div>
     </base-list>
-
-    <!--      todo 选项-->
-    <van-action-sheet
-      v-model="show"
-      :actions="actions"
-      @select="onSelect"
-    ></van-action-sheet>
   </div>
 </template>
 
@@ -61,6 +54,10 @@ export default {
     active: {
       type: Number,
       default: 0
+    },
+    special:{
+      type: Number,
+      default: 6
     }
   },
   data() {
@@ -104,35 +101,18 @@ export default {
         value: "source"
       },
       title: "全部来源",
-      show: false,
-      actions: [
-        {
-          text: "未指定",
-          value: 0
-        },
-        {
-          text: "值班",
-          value: 1
-        },
-        {
-          text: "巡查",
-          value: 2
-        },
-        {
-          text: "物联终端",
-          value: 3
-        }
-      ],
-      actions2: [
-        {
-          text: "处理中",
-          value: 5
-        },
-        {
-          text: "已处理",
-          value: 6
-        }
-      ],
+      screensign:'处理完成待确认',
+      buttonarr:[
+            {
+                type:'info',
+                text:'处理完成待确认'
+            },
+            {
+                type:'info',
+                text:'已派单'
+            }
+            
+        ],
       page: {
         FireUnitId: this.$store.state.userInfo.fireUnitID,
         HandleStatus: 0,
@@ -140,7 +120,7 @@ export default {
       },
       page2: {
         FireUnitId: this.$store.state.userInfo.fireUnitID,
-        HandleStatus: 5,
+        HandleStatus: 6,
         total: 0
       },
       pageTotal:{}
@@ -149,18 +129,27 @@ export default {
   computed: {},
   watch: {},
   created() {
-    console.log('列表页面的thisa.active',this.active)
+    console.log('列表页面的thisa.active77777777777',this.active,this.special)
+    if(this.special==5){
+      this.screensign = '已派单'
+      this.page2.HandleStatus = 5
+    }else if(this.special==6){
+      this.screensign = '处理完成待确认'
+      this.page2.HandleStatus = 6
+    }
   },
   mounted() {
     console.log("pagepage",this.page)
   },
   methods: {
-    // todo 获取来源中文名
-    getSource(val) {
-      let x = this.actions.find(item => {
-        return item.value === val;
-      });
-      return x ? x.text : "";
+    screen(state){
+      this.screensign = state;
+      if(state == '处理完成待确认'){
+        this.page2.HandleStatus = 6
+      }else if(state == '已派单'){
+          this.page2.HandleStatus = 5
+      }
+      this.getList();
     },
     // todo 获取list
     getList(success) {
@@ -198,6 +187,8 @@ export default {
           if(res.result.totalCount>0){
             for(let arr of res.result.items){
               arr.creationTime = this.deal(arr.creationTime)
+              arr.dispatchTime = this.deal(arr.dispatchTime)
+              arr.solutionTime = this.deal(arr.solutionTime)
             }
             this.tableList = this.tableList.concat(res.result.items);
           
@@ -260,6 +251,29 @@ export default {
     }
     .van-dropdown-item--down {
       top: 135px !important;
+    }
+  }
+  .top_screen{
+      padding: 10px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      .van-button{
+          height: 30px;
+          width: 50%;
+          line-height: 0px;
+      }
+  }
+  .van-cell__title, .van-cell__value{
+    flex: none;
+  }
+  .van-cell__title{
+    width: 80%;
+  }
+  .van-cell__label{
+    p{
+      line-height: 1.5;
+      margin: 0px;
     }
   }
 }
