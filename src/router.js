@@ -52,6 +52,26 @@ const router = new Router({
         }
       ]
     },
+    {
+      path: "/firewaring",
+      name: "firewaring",
+      component: () => import("./views/hiddendanger/firewaring.vue")
+    },
+    {
+      path: "/firewaringdetail",
+      name: "firewaringdetail",
+      component: () => import("./views/hiddendanger/firewaringdetail.vue")
+    },
+    {
+      path: "/electric",
+      name: "electric",
+      component: () => import("./views/hiddendanger/electric.vue")
+    },
+    {
+      path: "/piep",
+      name: "piep",
+      component: () => import("./views/hiddendanger/piep.vue")
+    },
     //  todo 设施故障
     //  详情页面、新增-0、编辑-1、查看-2、绑定的事当前激活的选项
     {

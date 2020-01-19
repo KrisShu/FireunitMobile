@@ -39,11 +39,12 @@ export default {
           label: "引导设置",
           router: "/AddWorker"
         },
-        {
-          icon: require("../../assets/site_img_02.png"),
-          label: "绑定设置编码",
-          router: "/CodeList"
-        },
+        //2019/1/11暂停使用
+        // {
+        //   icon: require("../../assets/site_img_02.png"),
+        //   label: "绑定设置编码",
+        //   router: "/CodeList"
+        // },
         {
           icon: require("../../assets/site_img_03.png"),
           label: "修改密码",

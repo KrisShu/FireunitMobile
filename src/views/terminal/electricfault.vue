@@ -23,13 +23,14 @@
       <div class="slot_content" slot-scope="scope" slot="content">
         <p class="display_p">
           <span class="speical_span">
-            <i>设施编号：</i>
+            <i class="left_title">设施编号：</i>
             {{scope.item.deviceSn}}
           </span>
+           <span @click="Poweroff(scope.item.deviceId)" class="special orange">断电</span>
         </p>
         <p class="display_p">
            <span>
-            <i>设施状态：</i>
+            <i class="left_title">设施状态：</i>
             <i class="gary" v-if="scope.item.state == -1">离线</i>
             <i class="green" v-if="scope.item.state == 1">在线</i>
             <i class="green" v-if="scope.item.state == 2">良好</i>
@@ -39,50 +40,53 @@
         </p>
         <p class="display_p">
           <span>
-            <i>安装位置：</i>
-            {{scope.item.location}}
+            <i class="left_title">安装位置：</i>
+            {{scope.item.fireUnitArchitectureName}}{{scope.item.fireUnitArchitectureFloorName}}{{scope.item.location}}
           </span>
         </p>
         <div class="display_p">
-            <div> 
-                <i>当前值：</i>
+            <div class="display_p">
+              <div> 
+                  <i class="left_title">当前值：</i>
+              </div>
+              <div>
+                  <ul v-if="scope.item.existTemperature">   
+                      <li v-if="scope.item.phaseType == 1">
+                          <span>
+                              L：{{scope.item.l}}
+                          </span>
+                      
+                          <span>
+                              N：{{scope.item.n}} 
+                          </span>
+                      </li>
+                      <li v-if="scope.item.phaseType == 2">
+                          <span>
+                              L1：{{scope.item.l1}}
+                          </span>
+                          <span>
+                              L2：{{scope.item.l2}}
+                          
+                          </span>
+                          <span>
+                              L3：{{scope.item.l3}}
+                          </span>
+                          
+                          <span>
+                              N：{{scope.item.n}}
+                          </span>
+                      </li>
+                  </ul>
+                  <ul v-if="scope.item.existAmpere">
+                      <li>
+                          <span>
+                          剩余电流：{{scope.item.a}}
+                          </span>
+                      </li>
+                  </ul>
+              </div>
             </div>
-            <div>
-                <ul v-if="scope.item.existTemperature">   
-                    <li v-if="scope.item.phaseType == 1">
-                        <span>
-                            L：{{scope.item.l}}
-                        </span>
-                    
-                        <span>
-                            N：{{scope.item.n}} 
-                        </span>
-                    </li>
-                    <li v-if="scope.item.phaseType == 2">
-                        <span>
-                            L1：{{scope.item.l1}}
-                        </span>
-                        <span>
-                            L2：{{scope.item.l2}}
-                        
-                        </span>
-                        <span>
-                            L3：{{scope.item.l3}}
-                        </span>
-                        
-                        <span>
-                            N：{{scope.item.n}}
-                        </span>
-                    </li>
-                </ul>
-                <ul v-if="scope.item.existAmpere">
-                    <li>
-                        <span>
-                        剩余电流：{{scope.item.a}}
-                        </span>
-                    </li>
-                </ul>
-            </div>
+             <span @click="getrefresh(scope.item.deviceId,scope)" class="green special"> 刷新数值 </span>
            
         </div>
       </div>
@@ -147,6 +151,7 @@ export default {
             // this.ElectricDeviceState = res.data.result
         })
     },
+    //筛选
     screen(text){
         this.screensign = text;
         if(text == '全部'){
@@ -157,7 +162,7 @@ export default {
         this.getList();
 
     },
-    getDetail() {},
+    //获取列表
     getList(success) {
       let x = arguments[0] instanceof Object;
       let p = this.page;
@@ -170,10 +175,59 @@ export default {
           params: p
         })
         .then(res => {
+          // console.log("获取列表",res)
           this.tableList = this.tableList.concat(res.result.items);
           p.total = res.result.totalCount;
           x ? success(this.tableList.length, res.result.totalCount, p) : "";
         });
+    },
+    //刷新数据
+    getrefresh(id,scope){
+      console.log("刷新数据",scope)
+        const toast = this.$toast.loading({
+            duration: 0, // 持续展示 toast
+            forbidClick: true,
+            message: '刷新数值中'
+        });
+      console.log("刷新数据",id)
+      this.$axios.get(this.$api.GetSingleElectricDeviceData,{params:{electricDeviceId:id}}).then(res=>{
+        console.log("刷新数据成功",res)
+        toast.clear();
+        if(res.result.result){
+          this.$toast('刷新数值成功');
+          this.getList();
+        }else{
+         this.$toast('刷新数值超时，请稍后再试');
+        }
+      }).catch(err=>{
+         console.log("刷新数据失败",err)
+      })
+    },  
+    //断电
+    Poweroff(id){
+      console.log("断电",id);
+     
+      this.$dialog.confirm({
+          title: "断电通知",
+          message: "您确认要对该设备所在线路执行断电操作吗？"
+      }).then(()=>{
+          const toast2 = this.$toast.loading({
+            duration: 0, // 持续展示 toast
+            forbidClick: true,
+            message: '发送断电信号中'
+          });
+          let form =  new FormData();
+          form.append("electricDeviceId", id);
+          this.$axios.post(this.$api.BreakoffPower,form).then(res=>{
+            toast2.clear();
+            this.$toast('已发送断电指令');
+          }).catch(err=>{
+            console.log("断电失败")
+          })
+      }).catch(()=>{
+
+      })
+     
     }
   }
 };
@@ -206,6 +260,17 @@ export default {
             .display_p{
                 display: flex;
                 align-items: flex-start;
+                justify-content: space-between;
+                .special{
+                  text-decoration: underline;
+                  letter-spacing:2px;
+                  &.green{
+                    color: #39b143
+                  }
+                  &.orange{
+                    color: #f58823
+                  }
+                }
                 ul{
                     li{
                             span{
@@ -219,6 +284,10 @@ export default {
                  i{
                     font-style:normal;
                     font-weight: bold;
+                    &.left_title{
+                      display: inline-block;
+                      width: 70px;
+                    }
                     &.gary{
                         color: #cccccc;
                     }

@@ -1,4 +1,6 @@
 const API = {
+
+
   //  todo 登录注册
   Add: "/api/services/app/FireUnitUser/Add", //添加账号
   USER_LOGIN: "/api/services/app/FireUnitUser/UserLoginForMobile", //用户登录
@@ -13,6 +15,16 @@ const API = {
   ADD_USER: "/api/services/app/AppGuideSet/AddUser", //新增工作人员
   DELETE_USER: "api/services/app/AppGuideSet/DeleteUser", // 删除工作人员
   UPDATE_FireUnit_System:"/api/services/app/AppGuideSet/UpdateFireUnitSystem",
+
+
+  GetNoReadAlarmNumList:"/api/services/app/Alarm/GetNoReadAlarmNumList",//
+  GetFireAlarmList:"/api/services/app/Alarm/GetFireAlarmList",//
+  CheckFireAlarm:"/api/services/app/Alarm/CheckFireAlarm",//提交核警
+  GetFireAlarmById:"/api/services/app/Alarm/GetFireAlarmById",//根据fireAlarmId获取单条火警数据详情
+  GetElectricAlarmList:"/api/services/app/Alarm/GetElectricAlarmList",//电气火灾报警
+  GetWaterAlarmList:"/api/services/app/Alarm/GetWaterAlarmList",//消防管网
+
+
 
   // todo 维保单位和消防巡查
   UPDATE_GUIDESET: "/api/services/app/AppGuideSet/UpdateGuideSet", //更新防火单位引导设置
@@ -42,6 +54,8 @@ const API = {
   //电气火灾设施
   GetFireElectricDeviceState: "/api/services/app/FireDevice/GetFireElectricDeviceState", //获取电气火灾设备各状态数量
   GetFireElectricDeviceList:"/api/services/app/FireDevice/GetFireElectricDeviceList", //获取指定防火单位ID的电气火灾设施列表
+  GetSingleElectricDeviceData:'/api/services/app/FireDevice/GetSingleElectricDeviceData',//刷新某一电气火灾设备的当前数值
+  BreakoffPower:'/api/services/app/FireDevice/BreakoffPower',//发送断电信号
   //消防管网
   GetFireWaterDeviceList: "/api/services/app/FireDevice/GetFireWaterDeviceList", //获取消防管网设备列表
   //-----------------------------------------------------------------------------------------------------

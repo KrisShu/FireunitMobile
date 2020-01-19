@@ -125,7 +125,7 @@ export default {
       this.$emit("onLoad", function success(size, total = 5, page = {}) {
         page.SkipCount = size;
         that.loading = false;
-        if (size >= total) {
+        if (size >= total ) {
           that.finished = true;
         }
       });
