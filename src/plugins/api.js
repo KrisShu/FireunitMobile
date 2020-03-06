@@ -23,7 +23,8 @@ const API = {
   GetFireAlarmById:"/api/services/app/Alarm/GetFireAlarmById",//根据fireAlarmId获取单条火警数据详情
   GetElectricAlarmList:"/api/services/app/Alarm/GetElectricAlarmList",//电气火灾报警
   GetWaterAlarmList:"/api/services/app/Alarm/GetWaterAlarmList",//消防管网
-
+  GetVisionAlarmList:"/api/services/app/Alarm/GetVisionAlarmList",//获取防火单位消防分析仪报警列表数据
+  GetVisionAlarmPhotoPath:'/api/services/app/Alarm/GetVisionAlarmPhotoPath',//
 
 
   // todo 维保单位和消防巡查

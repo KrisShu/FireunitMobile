@@ -109,7 +109,7 @@ export default {
 
 <style lang="scss">
 .piepBox{
-  .piepBox_content{
+    .piepBox_content{
      padding: 12px;
      .van-cell-group{
           background: #F8F8F8; 

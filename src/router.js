@@ -68,6 +68,11 @@ const router = new Router({
       component: () => import("./views/hiddendanger/electric.vue")
     },
     {
+      path: "/ai",
+      name: "ai",
+      component: () => import("./views/hiddendanger/ai.vue")
+    },
+    {
       path: "/piep",
       name: "piep",
       component: () => import("./views/hiddendanger/piep.vue")

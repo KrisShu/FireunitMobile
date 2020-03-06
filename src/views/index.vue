@@ -15,13 +15,15 @@
           <img class="electric_2"  src="../assets/2.png" alt="" />
           <img v-if="Electricred" class="red" src="../assets/redicon.png" alt="">
         </div>
+        <div @click="goto('ai')" class="righticonimg ">
+          <img class="ai"  src="../assets/ai.png" alt="" />
+          <img v-if="Electricred" class="red" src="../assets/redicon.png" alt="">
+        </div>
         <div @click="goto('piep')" class="righticonimg piep">
           <img  src="../assets/3.png" alt="" />
           <img v-if="Waterred" class="red" src="../assets/redicon.png" alt="">
         </div> 
       </div>
-    
-     
     </van-nav-bar>
 
     <!--    todo 内容-->
@@ -146,6 +148,10 @@ export default {
       }
       .electric_2{
         width: 32px;
+        height: 26px;
+      }
+      .ai{
+        width: 30px;
         height: 26px;
       }
     }
