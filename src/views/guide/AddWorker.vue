@@ -11,8 +11,8 @@
             <div>
               <img
                 class="add-worker-cell-typeImg"
-                v-for="i in item.rolelist"
-                :key="i"
+                v-for="(i,d) in item.rolelist"
+                :key="d"
                 :src="iconList[i]"
               />
             </div>
@@ -65,8 +65,8 @@
               <li v-for="(item, index) in setInfo" :key="index">{{ item }}</li>
             </ul>
             <van-checkbox-group v-model="form.rolelist">
-              <van-checkbox :name="2">值班员</van-checkbox>
-              <van-checkbox :name="3">巡查员</van-checkbox>
+              <van-checkbox name="值班员">值班员</van-checkbox>
+              <van-checkbox name="巡查员">巡查员</van-checkbox>
             </van-checkbox-group>
           </div>
         </div>
@@ -114,15 +114,15 @@ export default {
         }
       ],
       iconList: {
-        1: require("../../assets/guide_img_01.png"),
-        2: require("../../assets/guide_img_03.png"),
-        3: require("../../assets/guide_img_02.png")
+        '消防管理员': require("../../assets/guide_img_01.png"),
+        '值班员': require("../../assets/guide_img_03.png"),
+        '巡查员': require("../../assets/guide_img_02.png")
       },
       userList: [],
       show: false,
       form: {
         fireUnitInfoID: this.$store.state.userInfo.fireUnitID,
-        rolelist: [2, 3]
+        rolelist: ["值班员", "巡查员"]
       },
       setInfo: [
         "使用手机号登录系统，初始密码是666666",
@@ -169,6 +169,7 @@ export default {
         .then(res => {
           if (res.success) {
             this.userList = res.result;
+            console.log("this.userList",this.userList)
             x ? success(this.userList.length, this.userList.length) : "";
           }
         });

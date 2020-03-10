@@ -11,14 +11,15 @@
               <div class="slot_content " slot-scope="scope" slot="content">
                     <p class="display_p">
                         <span class="speical_span">
-                            <i>【设备编号】：</i>
+                            <i>【报警时间】：</i>
                             {{scope.item.creationTime}}
                         </span>
                     </p>
                     <p class="display_p">
                         <span class="speical_span">
                             <i>【警情类型】：</i>
-                            {{scope.item.visionAlarmType}}
+                            <i v-if="scope.item.visionAlarmType == 1"> 烟雾火焰</i>
+                            <i v-if="scope.item.visionAlarmType == 2"> 通道阻塞</i>
                         </span>
                     </p>
                     <p class="display_p">
@@ -33,7 +34,7 @@
                             {{scope.item.location}}
                         </span>
                     </p>
-                    <van-button @click="showImg(scope.item.visionAlarmId)" size="small" type="info">查看图片</van-button>
+                    <van-button @click="showImg(scope.item.visionAlarmId)" size="small" type="info">现场图片</van-button>
               </div>
             </base-list>
         </div>
