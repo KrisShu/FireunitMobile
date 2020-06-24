@@ -8,12 +8,15 @@ import "./plugins/BaseComponents"; // 基础公共组件
 import api from "./plugins/api.js";
 import axios from "./plugins/axios.js";
 import Cookies from "js-cookie";
-import { Toast } from "vant";
+import { Toast,Calendar } from "vant";
+
+
 // import VConsole from "vconsole";
 // let vConsole = new VConsole();
 // Vue.use(vConsole);
 
 Vue.use(Toast);
+Vue.use(Calendar);
 
 Vue.prototype.$api = api;
 Vue.prototype.$axios = axios;

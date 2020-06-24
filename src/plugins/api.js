@@ -59,6 +59,21 @@ const API = {
   BreakoffPower:'/api/services/app/FireDevice/BreakoffPower',//发送断电信号
   //消防管网
   GetFireWaterDeviceList: "/api/services/app/FireDevice/GetFireWaterDeviceList", //获取消防管网设备列表
+  
+  
+  GetFireAlarmCheckStatusNum:'/api/services/app/Alarm/GetFireAlarmCheckStatusNum',//获取未核警、已核警数量
+  
+  
+  GetElectricAlarmCheckStatusNum:'/api/services/app/Alarm/GetElectricAlarmCheckStatusNum',//获取电气火灾未处理、已处理警情数量
+  CheckElectricAlarm:'/api/services/app/Alarm/CheckElectricAlarm',//电气火灾警情处理
+  GetElectricAlarmCheckDetail:'/api/services/app/Alarm/GetElectricAlarmCheckDetail',//获取单条电气火灾警情处理详情
+
+
+
+  GetWaterAlarmCheckStatusNum:'/api/services/app/Alarm/GetWaterAlarmCheckStatusNum',//获取消防管网未处理、已处理警情数量
+  GetWaterAlarmCheckDetail:'/api/services/app/Alarm/GetWaterAlarmCheckDetail',// 获取单条消防管网警情处理详情
+  CheckWaterAlarm:'/api/services/app/Alarm/CheckWaterAlarm',//消防管网警情处理
+
   //-----------------------------------------------------------------------------------------------------
   //  todo 消防预警
   GET_ALARM_CHECKS: "/api/services/app/Alarm/GetAlarmChecks", //获取指定防火单位警情数据
@@ -96,6 +111,14 @@ const API = {
   DeletePatrol:"/api/services/app/DutyAndPatrolService/DeletePatrol",//删除巡查记录
 
 
+
+  // -----------2020/4/3新增功能独立烟感---------
+  GetIndependentDetectorList:'/api/services/app/IndependentDetector/GetIndependentDetectorList',//获取独立式火警设备列表
+  GetIndependentDetectorStatesNum:'/api/services/app/IndependentDetector/GetIndependentDetectorStatesNum',
+  
+
+  //数据报告报告
+  GetFireUnitReport:'/api/services/app/FireUnit/GetFireUnitReport',//获取防火单位的综合数据报告
 
   //  todo 设置
   UPDATE_EQUIPMENTNO_INFO:

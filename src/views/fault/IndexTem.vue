@@ -129,7 +129,7 @@ export default {
   computed: {},
   watch: {},
   created() {
-    console.log('列表页面的thisa.active77777777777',this.active,this.special)
+    // console.log('列表页面的thisa.active77777777777',this.active,this.special)
     if(this.special==5){
       this.screensign = '已派单'
       this.page2.HandleStatus = 5
@@ -158,7 +158,7 @@ export default {
       if(this.active==1 || this.active == 2){
         
         this.page.HandleStatus = this.active+3
-        console.log("this.page.HandleStatus",this.page.HandleStatus)
+        // console.log("this.page.HandleStatus",this.page.HandleStatus)
         if(this.active == 2){
           p = this.page2
           
@@ -175,15 +175,15 @@ export default {
         this.tableList = [];
       }
 
-      console.log("获取列表的参数",p)
+      // console.log("获取列表的参数",p)
       this.pageTotal = p
-       console.log("获取列表的参数this.pageTotalthis.pageTotal",this.pageTotal)
+      //  console.log("获取列表的参数this.pageTotalthis.pageTotal",this.pageTotal)
       this.$axios
         .get(this.$api.GET_BREAK_DOWNLIST, {
           params: p
         })
         .then(res => {
-          console.log("获取列获取列",res)
+          // console.log("获取列获取列",res)
           if(res.result.totalCount>0){
             for(let arr of res.result.items){
               arr.creationTime = this.deal(arr.creationTime)
@@ -196,7 +196,7 @@ export default {
           }
          
           x ? success(this.tableList.length, res.result.totalCount, p) : "";
-          console.log("this.tableList",this.tableList)
+          // console.log("this.tableList",this.tableList)
         });
     },
      //时间处理
@@ -214,13 +214,13 @@ export default {
     },
     // todo 查看详情、编辑
     getDetail(val) {
-      console.log(val,this.pageTotal.HandleStatus);
+      // console.log(val,this.pageTotal.HandleStatus);
       if(this.pageTotal.HandleStatus ==5 ||this.pageTotal.HandleStatus ==6){
-        console.log("this.pageTotal.HandleStatus2222",this.pageTotal.HandleStatus)
+        // console.log("this.pageTotal.HandleStatus2222",this.pageTotal.HandleStatus)
           this.$router.push(`./FaultDetail/${this.active}/${val.breakDownId}/${this.pageTotal.HandleStatus}`);
         
       }else{
-        console.log("this.pageTotal.HandleStatus",this.pageTotal.HandleStatus)
+        // console.log("this.pageTotal.HandleStatus",this.pageTotal.HandleStatus)
        this.$router.push(`./FaultDetail/${this.active}/${val.breakDownId}/0`);
       }
       

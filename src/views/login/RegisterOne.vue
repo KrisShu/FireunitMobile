@@ -6,10 +6,11 @@
       <div v-show="isShowName" class="register-one-unit">
         <van-cell
           @click="setName(x)"
-          title="111"
           v-for="(x, y) in nameList"
-          :key="y" :title="x.fireUnitName"
-        ></van-cell>
+          :key="y" 
+        >
+          {{x.fireUnitName}}
+        </van-cell>
       </div>
       <div class="register-one-notice">{{ notice }}</div>
     </div>
@@ -30,6 +31,7 @@ export default {
   data() {
     return {
       isShowName: false,
+      isShowName1:'',
       nameList: [],
       notice:
         "管理员拥有全部权限，只能通过邀请码进行注册，请妥善保管邀请码，勿对外泄露。",
@@ -50,9 +52,16 @@ export default {
   },
   computed: {},
   watch: {
-    "form.fireUnitName": function() {
+    "form.fireUnitName": function(val,old) {
+      console.log(val,old)
       setTimeout(() => {
+        console.log("this.isShowName",this.isShowName)
+        if(this.isShowName1 == val){
+          return
+        }
         this.getName();
+        
+        
       }, 1000);
     }
   },
@@ -61,8 +70,11 @@ export default {
   methods: {
     // todo 选择单位名称
     setName(item) {
+      console.log(item)
       this.form.fireUnitName = item.fireUnitName;
+
       this.isShowName = false;
+      this.isShowName1 = item.fireUnitName;
     },
     // todo 模糊查询防火单位名称
     getName() {

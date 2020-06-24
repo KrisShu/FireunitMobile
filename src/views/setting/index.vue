@@ -92,8 +92,7 @@ export default {
               this.$router.push("login");
             }
           });
-        })
-        .catch(() => {});
+        }).catch(() => {});
       this.setBackButton(function() {
         that.$dialog.close();
       });

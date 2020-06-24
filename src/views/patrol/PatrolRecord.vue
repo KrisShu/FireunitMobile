@@ -60,13 +60,6 @@
               name="clear"
               @click="deleteStep(index,item.patrolDetailId)"
             ></van-icon>
-            <!-- 2019/12/31暂停使用  编辑-->
-           <!--  <van-icon
-              v-if="(userInfo.patrolStatus == 4 || userInfo.state == 4 )"
-              class="patrol-record-steps-i"
-              name="more"
-              @click="getDetail(item)"
-            ></van-icon> -->
           </van-step>
         </van-steps>
       </div>
@@ -130,7 +123,7 @@ export default {
   watch: {},
   created() {
     this.getType();
-    console.log("this.$route.query;",this.$route.query)
+    // console.log("this.$route.query;",this.$route.query)
     this.userInfo = this.$route.query;
     this.id = +this.$route.params.id;
     this.id ? this.getList() : " "
@@ -164,21 +157,19 @@ export default {
     },
     //  todo 获取巡查轨迹
     getList() {
-      console.log("getList");
       this.$axios
         .get(this.$api.GetPatrolInfo, {
           params: { patrolId : this.id }
         })
         .then(res => {
           if (res.success) {
-            console.log("巡查轨迹详情list", res.result);
+            // console.log("巡查轨迹详情list", res.result);
             this.getNum(res.result.patrolDetailList);
             this.userInfo = res.result
             this.userInfo.creationTime = this.dealTime(this.userInfo.creationTime)
             this.list = res.result.patrolDetailList;
 
             for(let arr of  this.list){
-
               arr.creationTime = this.dealTime(arr.creationTime)
               arr.base64photoList =[]
               arr.truePhoto=[]
@@ -205,19 +196,6 @@ export default {
                   }
                 }
             }
-
-            //
-            // //  照片
-            // for (let i of res.result) {
-            //   i.photoList = [];
-            //   i.truePhoto = [];
-            //   for (let y in i.patrolPhotosPath) {
-            //     i.truePhoto.push(`${this.$url}${i.patrolPhotosPath[y]}`);
-            //   }
-            //   for (let g of i.photosBase64) {
-            //     i.photoList.push(`data:image/;base64,${g}`);
-            //   }
-            // }
           }
         });
     },
@@ -306,7 +284,7 @@ export default {
           vociePath,
           function(entry) {
             entry.file(function(file) {
-              console.log("语音文件对象", file);
+              // console.log("语音文件对象", file);
               var fileReader = new plus.io.FileReader();
               fileReader.readAsDataURL(file);
               fileReader.onloadend = function(evt) {
@@ -356,33 +334,23 @@ export default {
     deleteStep(index,id) {
       this.list.splice(index, 1);
       this.$axios.delete(this.$api.DeletePatrolDetail,{params:{patrolDetailId:id}}).then(res=>{
-        console.log("删除某一个轨迹点成功",res)
+        // console.log("删除某一个轨迹点成功",res)
       }).catch(err=>{
-        console.log("删除某一个轨迹点失败",err)
+        // console.log("删除某一个轨迹点失败",err)
       })
     },
-    // todo 查看详情2019/12/31暂停使用
-    /*  getDetail(item) {
-      console.log("itemitem",item)
-      this.$store.commit('setPatrolArrayDetail',item);
-      this.$router.push({
-        path:`/PatrolDetail/3/0`
-      })
-  
-
-    }, */
     // todo 新建一个巡查对象，然后返回ID，再依次添加数据
     submit() {
       let param = new FormData();
       param.append("patrolId", this.userInfo.patrolId);
-      console.log("提交总记录",this.userInfo.patrolId)
+      // console.log("提交总记录",this.userInfo.patrolId)
       Toast.loading({
         duration: 0,
         mask: true,
         message: "提交中"
       });
       this.$axios.post(this.$api.SubmitPatrol, param).then(res => {
-        console.log("提交回馈", res);
+        // console.log("提交回馈", res);
         localStorage.removeItem('PatrolId')
         Toast.clear();
         this.$router.push({
@@ -396,7 +364,7 @@ export default {
     //删除
     deletelist(){
       this.$axios.delete(this.$api.DeletePatrol,{params:{patrolId:this.userInfo.patrolId}}).then(res=>{
-        console.log("删除数成功",res)
+        // console.log("删除数成功",res)
         localStorage.removeItem('PatrolId')
         this.$router.push({
           name:'patrol',

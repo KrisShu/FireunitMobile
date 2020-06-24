@@ -60,9 +60,12 @@ export default {
       this.$axios
         .post(this.$api.USER_REGISTUSER_REGIST, this.form)
         .then(res => {
-          if (res.success) {
+          console.log("注册",res)
+          if (res.result.success) {
             this.$toast.success("注册成功");
             this.$router.push("/login");
+          }else{
+            this.$toast(res.result.failCause);
           }
         });
     }

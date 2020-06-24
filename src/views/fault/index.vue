@@ -36,7 +36,7 @@ export default {
   computed: {},
   watch: {},
   created() {
-    console.log("路由参数",this.$route.params)
+    // console.log("路由参数",this.$route.params)
     this.active = +this.$route.params.active
     this.special = +this.$route.params.special
   },

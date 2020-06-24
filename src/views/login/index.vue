@@ -72,7 +72,7 @@ export default {
       this.$axios.post(this.$api.USER_LOGIN, f).then(res => {
         if (res.success) {
           let r = res.result;
-          console.log("登录成功",r)
+          // console.log("登录成功",r)
           // 账号错误
           if (!r.success) {
             this.$toast(r.failCause);

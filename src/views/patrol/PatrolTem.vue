@@ -109,7 +109,7 @@ export default {
   created() {
     this.page.FireUnitId = this.$store.state.userInfo.fireUnitID;
 
-    console.log("dddddddddddddddddd", this.$store.state.patrolArray);
+    // console.log("dddddddddddddddddd", this.$store.state.patrolArray);
   },
   mounted() {},
   methods: {

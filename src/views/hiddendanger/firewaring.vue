@@ -1,12 +1,35 @@
 <template>
   <div class="firewaring_box">
       <base-nav title="火警联网报警"></base-nav>
+        <div class="top_screen">
+            <van-button  
+                v-for="item in buttonarr"
+                :key="item.text"
+                plain
+                :type="item.type"
+                @click="screen(item.text)"
+            >
+               <div>
+                    
+                <p>
+                    <van-icon v-if="screensign == item.text" name="star" />
+                    {{item.text}}
+                </p>
+                <p>
+                    {{item.num}}
+                </p>
+               </div>
+                
+
+            </van-button>
+        </div>
       <div class="firewaring_content">
             <base-list
                 @onLoad="GetFireAlarmList"
                 @refresh="GetFireAlarmList"
                 :mostlist="false"
                 :tableList="tableList"
+                ref="baseList"
             >
                 <div class="slot_content " slot-scope="scope" slot="content">
                         <p :class="isread(scope.item.isRead)">
@@ -14,14 +37,11 @@
                                 <i>【报警部件】：</i>
                                 {{scope.item.detectorSn}}
                             </span>
-                           <!--  <span class="yellow" v-if="scope.item.checkState == 1">
-                               核警
-                            </span> -->
-                            <van-button @click="Nuclearpolice(scope.item.fireAlarmId)" v-if="scope.item.checkState == 1" type="warning">核警</van-button>
+                            <van-button @click="Nuclearpolice(scope.item.fireAlarmId)" v-if="scope.item.checkState == 1" type="warning">处理</van-button>
                             <van-button @click="getdetails(scope.item.fireAlarmId)"  v-if="scope.item.checkState == 2" type="info">误报</van-button>
                             <van-button @click="getdetails(scope.item.fireAlarmId)" v-if="scope.item.checkState == 3" type="info">测试</van-button>
                             <van-button @click="getdetails(scope.item.fireAlarmId)" v-if="scope.item.checkState == 4" type="info">真实火警</van-button>
-                            <van-button v-if="scope.item.checkState == 5" disabled  type="default">已过期</van-button>
+                            <van-button @click="Nuclearpolice(scope.item.fireAlarmId)" v-if="scope.item.checkState == 5" type="warning">处理</van-button>
                         </p>
                         <p class="display_p">
                             <span class="speical_span">
@@ -71,6 +91,28 @@
                     <van-button type="info" @click="submit" size="large">提交</van-button>
                 </div>
             </van-action-sheet>
+            <!--  -->
+            <van-action-sheet round v-model="detailsshow" title="核警">
+                <div class="Nuclearpolice_content">
+                    <p>处理时间：<span>{{details.checkTime}}</span> </p>
+                    <p>处理状态：
+                        <span v-if="details.checkState == 2">误报</span>
+                        <span v-if="details.checkState == 3">测试</span>
+                        <span v-if="details.checkState == 4">真实火警</span>
+                    </p>
+                    <div>
+                        <p v-if="details.content && details.content != '无' ">情况描述：<span>{{details.content}}</span> </p>
+                        <div class="display_p" v-if="details.vioceUrl">
+                            <span>情况描述：</span>
+                            <base-play-sound
+                            :time="details.voiceLength"
+                            :isEdit="1"
+                            :voice.sync="details.vioceUrl"
+                            ></base-play-sound>
+                        </div>
+                    </div>
+                </div>
+            </van-action-sheet>
       </div>
        
      
@@ -79,18 +121,38 @@
 
 <script>
 import DescribeQusetion from "../../components/DescribeQusetion"
+import BasePlaySound from "../../components/BasePlaySound"
 export default {
     components:{
-        DescribeQusetion
+        DescribeQusetion,
+        BasePlaySound
     },
     data(){
         return{
             screendata:[],
             tableList:[],
+            buttonarr:[
+                {
+                    type:'info',
+                    text:'全部'
+                },
+                {
+                    type:'warning',
+                    text:'未核警',
+                    num:0
+                },
+                {
+                    type:'primary',
+                    text:'已核警',
+                    num:0
+                }
+                
+            ],
+            screensign:'全部',
             page:{
                 FireUnitId :this.$store.state.userInfo.fireUnitID,
                 VisitSource :2,
-                CheckStates:'未核警,误报,测试,真实火警,已过期',
+                CheckStates:1,
             },
             show:false,//是否显示核警框
             question: {},
@@ -99,12 +161,37 @@ export default {
                 fireAlarmId:0,
                 CheckState: '2',
                 NotifyList:['通知工作人员'],
-                message:''
-            }
+            },
+            details:{},
+            detailsshow:false
             
         }
     },
+    created(){
+        this.GetFireAlarmCheckStatusNum();
+    },
     methods:{
+        GetFireAlarmCheckStatusNum(){
+            this.$axios.get(this.$api.GetFireAlarmCheckStatusNum,{
+                params:{fireUnitId:this.$store.state.userInfo.fireUnitID}
+            }).then(res=>{
+                // console.log("记录条数",res);
+                this.buttonarr[1].num = res.result[0].value
+                this.buttonarr[2].num = res.result[1].value
+            })
+        },
+        screen(text){
+            // console.log(text)
+            this.screensign = text
+            if(text == '未核警'){
+                this.page.CheckStates = 3
+            }else if(text == '已核警'){
+                this.page.CheckStates = 2
+            }else{
+                this.page.CheckStates = 1
+            }
+            this.GetFireAlarmList();
+        },
         //
         GetFireAlarmList(success) {
             let x = arguments[0] instanceof Object;
@@ -112,9 +199,11 @@ export default {
             if (!x) {
                 p.SkipCount = 0;
                 this.tableList = [];
+                this.$refs.baseList.loading = true //将加载中....打开
+                this.$refs.baseList.finished = false //将完成字样  关闭
             }
             this.$axios.get(this.$api.GetFireAlarmList, {params: p}).then(res => {
-                console.log("获取核警列表",res)
+                // console.log("获取核警列表",res)
                 if(res.result.totalCount>0){
                     for(let arr of res.result.items){
                         arr.creationTime = this.deal(arr.creationTime)
@@ -123,12 +212,19 @@ export default {
                     p.total = res.result.totalCount;
                 }
                 
-                x ? success(this.tableList.length, res.result.totalCount, p) : "";
+                x ? success(this.tableList.length, res.result.totalCount, p) : this.changelist(this.tableList.length, res.result.totalCount, p);
             });
+        },
+        changelist(size, total = 5, page = {}){//改变列表状态
+            page.SkipCount = size;
+            this.$refs.baseList.loading = false;
+            if (size >= total ) {
+                this.$refs.baseList.finished = true;
+            }
         },
         //是否未读
         isread(flag){//true为已读
-            console.log("是否读取",flag)
+            // console.log("是否读取",flag)
             if(flag){
                 return 'display_p'
             }else{
@@ -144,7 +240,7 @@ export default {
         },
         //打开核警弹窗
         Nuclearpolice(id){
-            console.log(id)
+            // console.log(id)
             this.show = true;
             this.NuclearpoliceForm.fireAlarmId = id
         },
@@ -156,7 +252,7 @@ export default {
             let arr, mime, bstr, n, u8arr;
             arr = base64.split(",");
             mime = arr[0].match(/:(.*?);/)[1];
-            console.log("mime", mime);
+            // console.log("mime", mime);
             bstr = atob(arr[1]); // 解码base-64编码的数据
             n = bstr.length;
             u8arr = new Uint8Array(n); // 无符号整型数组
@@ -171,11 +267,11 @@ export default {
         },
         //提交核警数据
         submit(){
-            console.log("this",this.question,this.NuclearpoliceForm)
+            // console.log("this",parseInt(this.NuclearpoliceForm.CheckState))
             let param = new FormData();
-            param.append("CheckUserId", this.$store.state.userInfo.userId);
-            param.append("FireAlarmId", this.NuclearpoliceForm.fireAlarmId);
-            param.append("CheckState", +this.NuclearpoliceForm.CheckState);
+            param.append("CheckUserId", parseInt(this.$store.state.userInfo.userId));
+            param.append("AlarmDataId", parseInt(this.NuclearpoliceForm.fireAlarmId));
+            param.append("CheckState", parseInt(this.NuclearpoliceForm.CheckState) );
             if(this.NuclearpoliceForm.CheckState == 4){
                 param.append("NotifyList", this.NuclearpoliceForm.NotifyList);
             }
@@ -187,22 +283,28 @@ export default {
             }
 
             this.$axios.post(this.$api.CheckFireAlarm,param).then(res=>{
-                console.log("核警成功",res)
+                // console.log("核警成功",res)
                 this.show = false;
+                this.NuclearpoliceForm.CheckState = '2'
+                this.question = {}
                 this.GetFireAlarmList()
+                this.GetFireAlarmCheckStatusNum()
             }).catch(err=>{
                 console.log("核警失败",err)
             })
+            
            
         },
         //查看数据详情
-        getdetails(id){
-            console.log("idid",id)
-            this.$router.push({
-                path:'/firewaringdetail',
-                query:{
-                    id
+        getdetails(fireAlarmId){
+            this.detailsshow = true
+            this.$axios.get(this.$api.GetFireAlarmById,{params:{fireAlarmId}}).then(res=>{
+                // console.log(res);
+                res.result.checkTime = this.deal(res.result.checkTime)
+                if(res.result.vioceUrl){
+                    res.result.vioceUrl = `${this.$url}${res.result.vioceUrl}`
                 }
+                this.details  = res.result
             })
         }
     }
@@ -211,6 +313,22 @@ export default {
 
 <style lang="scss">
     .firewaring_box{
+        .top_screen{
+            padding: 10px 12px 0 12px;
+            display: flex;
+            justify-content: space-between;
+            .van-button{
+                 width: 30%;
+            }
+            .van-button__text{
+                div{
+                    p{
+                        line-height: 1.5;
+                        margin: 0;
+                    }
+                }
+            }
+        }
         .firewaring_content{
             padding: 12px;
             .van-cell-group{
@@ -240,6 +358,14 @@ export default {
             }
             .Nuclearpolice_content{
                 padding: 20px 10px;
+                .display_p{
+                    display: flex;
+                    align-items: center;
+                    &>span{
+                        font-weight: bold;
+                        font-size: 14px;
+                    }
+                }
                 .van-radio-group{
                     display: flex;
                     justify-content: space-between;
@@ -262,6 +388,15 @@ export default {
                     .van-checkbox:nth-of-type(1){
                         margin-right: 20px;
                     }
+                }
+                p{
+                    font-weight: bold;
+                    font-size: 14px;
+                    span{
+                        font-weight: normal;
+                        font-size: 14px;
+                    }
+
                 }
                 .describe-qusetion{
                     margin-top: 20px;

@@ -12,6 +12,9 @@
       <van-tab title="电气火灾">
         <electricfault></electricfault>
       </van-tab>
+      <van-tab title="独立烟感">
+        <smokesense></smokesense>
+      </van-tab>
       <van-tab title="消防管网">
         <piepnetwork></piepnetwork>
       </van-tab>
@@ -27,13 +30,14 @@
 import firenetworking from "./firenetworking";
 import electricfault from "./electricfault";
 import piepnetwork from "./piepnetwork";
+import smokesense from './smokesense'
 export default {
   name: "index",
   components: {
     firenetworking,
     electricfault,
-    piepnetwork
-
+    piepnetwork,
+    smokesense
   },
   props: {},
   data() {

@@ -5,7 +5,7 @@
       <div slot="left">
         <img src="../assets/ssgz_img_01.png" alt="" />
         <span style="margin-left: 5px">{{ $store.state.userInfo.name }}</span>
-      </div>
+      </div> 
       <div slot="right" class="righticon">
         <div @click="goto('firewaring')" class="righticonimg firewaring">
           <img  src="../assets/1.png" alt="" />
@@ -80,6 +80,12 @@ export default {
           router: "terminal"
         },
         {
+          label: "数据报告",
+          active: require("../assets/report_1.png"),
+          normal: require("../assets/report_2.png"),
+          router: "report"
+        },
+        {
           label: "我的设置",
           active: require("../assets/ssgz_btn_blue04.png"),
           normal: require("../assets/ssgz_btn_gray04.png"),
@@ -97,7 +103,7 @@ export default {
   },
   watch: {},
   created() {
-    console.log("this.$route.meta.active",this.$route.meta.active)
+    // console.log("this.$route.meta.active",this.$route.meta.active)
     this.active = this.$route.meta.active;
     this.GetNoReadAlarmNumList();
   },
@@ -106,7 +112,7 @@ export default {
     GetNoReadAlarmNumList(){
       let fireUnitId = this.$store.state.userInfo.fireUnitID;
       this.$axios.get(this.$api.GetNoReadAlarmNumList,{params:{fireUnitId}}).then(res=>{
-        console.log("获取三个状态",res)
+        // console.log("获取三个状态",res)
         if(res.result[0].noReadAlarmNum>0){
           this.firewaringred = true
         }

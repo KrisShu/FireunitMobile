@@ -20,7 +20,7 @@ const router = new Router({
           },
           component: () => import("./views/fault/index.vue")
         },
-        //  todo 值班巡逻
+        //  todo 值班巡查
         {
           path: "patrol",
           name: "patrol",
@@ -40,12 +40,22 @@ const router = new Router({
           },
           component: () => import("./views/terminal/index.vue")
         },
+        //  todo 数据报告
+        {
+          path: "report",
+          name: "report",
+          meta: {
+            active: 3,
+            keepAlive: true //该字段表示该页面需要缓存
+          },
+          component: () => import("./views/report/index.vue")
+        },
         //  todo 我的设置
         {
           path: "setting",
           name: "setting",
           meta: {
-            active: 3,
+            active: 4,
             keepAlive: true //该字段表示该页面需要缓存
           },
           component: () => import("./views/setting/index.vue")

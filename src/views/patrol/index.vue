@@ -1,12 +1,12 @@
 <template>
   <div>
     <van-tabs color="#0385fe" class="patrol-index" v-model="active" swipeable>
-      <van-tab title="值班记录"
-        ><patrol-tem :active="active"></patrol-tem
-      ></van-tab>
-      <van-tab title="巡查记录"
-        ><patrol-tem :active="active"></patrol-tem
-      ></van-tab>
+      <van-tab title="值班记录">
+        <patrol-tem :active="active"></patrol-tem>
+      </van-tab>
+      <van-tab title="巡查记录">
+        <patrol-tem :active="active"></patrol-tem>
+      </van-tab>
     </van-tabs>
   </div>
 </template>
@@ -32,7 +32,7 @@ export default {
   watch: {},
   created() {
 
-    console.log("路由参数active",this.$route.params)
+    // console.log("路由参数active",this.$route.params)
     this.active = +this.$route.params.active
   },
   mounted() {},
