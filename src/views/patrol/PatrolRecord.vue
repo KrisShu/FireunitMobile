@@ -163,12 +163,12 @@ export default {
         })
         .then(res => {
           if (res.success) {
-            // console.log("巡查轨迹详情list", res.result);
+            console.log("巡查轨迹详情list", res.result);
             this.getNum(res.result.patrolDetailList);
             this.userInfo = res.result
             this.userInfo.creationTime = this.dealTime(this.userInfo.creationTime)
             this.list = res.result.patrolDetailList;
-
+            localStorage.setItem('PatrolId',res.result.patrolId)
             for(let arr of  this.list){
               arr.creationTime = this.dealTime(arr.creationTime)
               arr.base64photoList =[]

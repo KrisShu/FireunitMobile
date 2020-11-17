@@ -144,6 +144,12 @@ const router = new Router({
       name: "TechnicalSupport",
       component: () => import("./views/setting/TechnicalSupport.vue")
     },
+    //系统更新
+    {
+      path: "/updateSystem",
+      name: "updateSystem",
+      component: () => import("./views/setting/updateSystem.vue")
+    },
     //  提建议
     {
       path: "/AddAdvice",

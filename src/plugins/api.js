@@ -48,6 +48,7 @@ const API = {
   GET_RECORD_ANALOG: "/api/services/app/Device/GetRecordAnalog", //获得防火单位终端历史记录 */
   //物联终端
   //火警联网
+  GetFireAlarmDeviceStateNum:'/api/services/app/FireDevice/GetFireAlarmDeviceStateNum',// 获取某个防火单位的火警联网设施状态数量
   GetFireAlarmDeviceList: "/api/services/app/FireDevice/GetFireAlarmDeviceList", //获取指定防火单位ID的火警联网设施列
   GetFireAlarmFaultDetectorList:"/api/services/app/FireDevice/GetFireAlarmFaultDetectorList", //获取指定设备ID的故障部件列表
   GetFireAlarm30DayList: "/api/services/app/FireDevice/GetFireAlarm30DayList", //获取指定设备ID的30天报警记录
@@ -129,7 +130,7 @@ const API = {
   ADD_ADVICE: "/api/services/app/Version/Add", //添加建议
   Get_Select_Safe_Units: "/api/services/app/SafeUnit/GetSelectSafeUnits", //选择查询维保单位
   CHANGE_PASSWORD: "/api/services/app/FireUnitUser/ChangePassword", //修改密码
-  USER_LOGOUT: "/api/services/app/FireUnitUser/UserLogout"//注销用户
- 
+  USER_LOGOUT: "/api/services/app/FireUnitUser/UserLogout",//注销用户
+  GetNewestVersion:'/api/services/app/Version/GetNewestVersion', //获取最新版本信息
 };
 export default API;

@@ -49,9 +49,7 @@ export default {
       cmr.captureImage(
         function(path) {
           // todo 获取拍照后的真实地址
-          plus.io.resolveLocalFileSystemURL(
-            path,
-            function(entry) {
+          plus.io.resolveLocalFileSystemURL(path,function(entry) {
               //2019/12/26-------------------要加水印版
               // that.list.push(entry.fullPath)
               var imgSrc = entry.toLocalURL();

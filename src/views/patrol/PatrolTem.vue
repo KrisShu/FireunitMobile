@@ -170,23 +170,9 @@ export default {
     },
     // todo 新增
     addList() {
+      localStorage.removeItem('PatrolId')
       let u = `./${this.active ? "PatrolRecord" : "DutyRecord"}/0`;
       if (this.active) {
-        //新增巡查记录
-        /* if (this.$store.state.patrolArray.length > 0) {
-          this.$toast("存在未提交的巡查记录，请提交后再新增");
-        } else {
-          let data = this.$store.state.userInfo.fireUnitID;
-          this.$axios
-            .get(this.$api.GET_ADD_ALLOW, { params: { FireUnitId: data } })
-            .then(res => {
-              if (res.result.success) {
-                this.$router.push(u);
-              } else {
-                this.$toast(res.result.failCause);
-              }
-            });
-        } */
           //是否能新增
           let data = this.$store.state.userInfo.fireUnitID;
           this.$axios

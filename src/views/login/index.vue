@@ -84,13 +84,6 @@ export default {
           localStorage.setItem("isAdmin", role);
           localStorage.setItem("setUserInfo", JSON.stringify(r));
           this.$store.commit("setUserInfo", r);
-          // 是否自动登录
-          // if (this.isAuto) {
-          //   plus.storage.setItem("isLogin", 1);
-          // } else {
-          //   this.$store.commit("setUserInfo", r);
-          // }
-          //  是否跳转引导页
           if (r.guideFlage) {
             this.$router.push("/guide");
           } else {

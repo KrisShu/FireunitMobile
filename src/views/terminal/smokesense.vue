@@ -20,6 +20,7 @@
             @refresh="getList"
             :mostlist="false"
             :tableList="tableList"
+            ref="baselist"
         >
             <div class="slot_content" slot-scope="scope" slot="content">
                 <p class="display_p">
@@ -111,16 +112,24 @@ export default {
             let x = arguments[0] instanceof Object;
             let p = this.page;
             if (!x) {
-                // console.log("noooooooo")
                 p.SkipCount = 0;
                 this.tableList = [];
+                this.$refs.baselist.loading = true;
+                this.$refs.baselist.finished = false;
             }
             this.$axios.get(this.$api.GetIndependentDetectorList,{params: p}).then(res=>{
                 console.log("获取列表",res);
                 this.tableList = this.tableList.concat(res.result.items);
                 p.total = res.result.totalCount;
-                x ? success(this.tableList.length, res.result.totalCount, p) : "";
+                x ? success(this.tableList.length, res.result.totalCount, p) : this.changelist(this.tableList.length, res.result.totalCount, p);
             })
+        },
+        changelist(size, total = 5, page = {}){
+            page.SkipCount = size;
+            this.$refs.baselist.loading = false;
+            if (size >= total ) {
+                this.$refs.baselist.finished = true;
+            }  
         },
         getColor(num){
             if(num >20){
@@ -146,6 +155,7 @@ export default {
                 height: 30px;
                 padding: 6px;
                 line-height: 0px;
+                width: 76px;
             }
             .van-button--default{
                 border: 1px solid rgb(110, 110, 110);

@@ -39,12 +39,7 @@
           type="flex"
           justify="center"
         >
-          <!--        todo 收集声音-->
-          <!-- 2019/11/6暂停使用 -->
-          <!-- 2019/12/27使用 -->
           <base-record-sound @testVocie="testVocie" v-model="question.voice"></base-record-sound>
-          <!--2019/12/27暂停使用  -->
-          <!--  <base-record-sound v-model="question.voice"></base-record-sound> -->
         </van-row>
       </div>
 
@@ -110,8 +105,6 @@ export default {
   created() {},
   mounted() {},
   methods: {
-    //------------------2019/11/6--------------------暂停使用--------------
-    //------------------2019/12/26--------------------使用--------------
     testVocie(voice){
       console.log("录音文件",voice)
       this.Audio2dataURL(voice)

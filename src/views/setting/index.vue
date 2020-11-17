@@ -11,12 +11,15 @@
       >
         <img
           slot="icon"
-          width="18px"
+          :width=item.width
           height="20px"
           style="margin-right: 10px"
           :src="item.icon"
           alt=""
         />
+        <template v-if="dotshow && item.label == '系统更新'" #default>
+          <img class="dot_iocn" src="../../assets/dot.png" alt="">
+        </template>
       </van-cell>
     </van-cell-group>
   </div>
@@ -37,7 +40,8 @@ export default {
         {
           icon: require("../../assets/site_img_01.png"),
           label: "引导设置",
-          router: "/AddWorker"
+          router: "/AddWorker",
+          width:'18px'
         },
         //2019/1/11暂停使用
         // {
@@ -48,26 +52,38 @@ export default {
         {
           icon: require("../../assets/site_img_03.png"),
           label: "修改密码",
-          router: "/ChangePassword"
+          router: "/ChangePassword",
+          width:'18px'
         },
         {
           icon: require("../../assets/site_img_04.png"),
           label: "技术支持",
           content: "天树聚城市智慧消防",
-          router: "/TechnicalSupport"
+          router: "/TechnicalSupport",
+          width:'18px'
+        },
+        {
+          icon: require("../../assets/update.png"),
+          label: "系统更新",
+          router: "/updateSystem",
+          width:'22px'
         },
         {
           icon: require("../../assets/site_img_05.png"),
           label: "注销登录",
-          router: ""
+          router: "",
+          width:'18px'
         }
-      ]
+      ],
+      dotshow:false
      
-      };
+    };
   },
   computed: {},
   watch: {},
-  created() {},
+  created() {
+    this.checkVersion();
+  },
   mounted() {},
   methods: {
 
@@ -96,7 +112,16 @@ export default {
       this.setBackButton(function() {
         that.$dialog.close();
       });
-    }
+    },
+    checkVersion(){
+        this.$axios.get(this.$api.GetNewestVersion,{params:{AppType:2}}).then(res=>{
+            console.log("res",res)
+            let version =  localStorage.getItem('version');
+            if(version !== res.result.versionNo){
+              this.dotshow = true
+            }
+        })
+    },
   }
 };
 </script>
@@ -112,5 +137,9 @@ export default {
     height: 100px;
     border: 1px solid red;
   }
+  
+}
+.dot_iocn{
+  width: 14px;
 }
 </style>

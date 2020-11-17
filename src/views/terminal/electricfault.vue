@@ -19,6 +19,7 @@
       @refresh="getList"
       :mostlist="false"
       :tableList="tableList"
+      ref="baselist"
     >
       <div class="slot_content" slot-scope="scope" slot="content">
         <p class="display_p">
@@ -169,6 +170,8 @@ export default {
       if (!x) {
         p.SkipCount = 0;
         this.tableList = [];
+        this.$refs.baselist.loading = true;
+        this.$refs.baselist.finished = false;
       }
       this.$axios
         .get(this.$api.GetFireElectricDeviceList, {
@@ -178,8 +181,15 @@ export default {
           // console.log("获取列表",res)
           this.tableList = this.tableList.concat(res.result.items);
           p.total = res.result.totalCount;
-          x ? success(this.tableList.length, res.result.totalCount, p) : "";
+          x ? success(this.tableList.length, res.result.totalCount, p) : this.changelist(this.tableList.length, res.result.totalCount, p);
         });
+    },
+    changelist(size, total = 5, page = {}){
+        page.SkipCount = size;
+        this.$refs.baselist.loading = false;
+        if (size >= total ) {
+            this.$refs.baselist.finished = true;
+        }
     },
     //刷新数据
     getrefresh(id,scope){

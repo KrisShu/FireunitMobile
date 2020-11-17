@@ -1,10 +1,25 @@
 <template>
   <div class="fireneteork_box">
+    <div class="top_screen">
+       <van-button  
+        v-for="item in buttonarr"
+        :key="item.text"
+        plain
+        :type="item.type"
+        @click="screen(item.text)"
+       >
+            <van-icon v-if="screensign == item.text" name="star" />
+            {{item.text}}
+            {{item.num}}
+
+        </van-button>
+    </div>
     <base-list
       @onLoad="getList"
       @refresh="getList"
       :mostlist="false"
       :tableList="tableList"
+      ref="baselist"
     >
       <div class="slot_content" slot-scope="scope" slot="content">
         <p class="display_p">
@@ -65,6 +80,23 @@
 export default {
   data(){
     return {
+      buttonarr:[
+          {
+              type:'info',
+              text:'全部'
+          },
+          {
+              type:'primary',
+              text:'在线',
+              num:0
+          },
+          {
+              type:'default',
+              text:'离线',
+              num:0
+          },
+      ],
+      screensign:'全部',
       tableList: [],
       page: {
         fireUnitId: '',
@@ -74,9 +106,23 @@ export default {
   },
   created(){
     let setUserInfo = JSON.parse(localStorage.getItem('setUserInfo')) 
-    this.page.fireUnitId = setUserInfo.fireUnitID
+    this.page.fireUnitId = setUserInfo.fireUnitID;
+    this.GetFireAlarmDeviceStateNum();
   },
   methods: {
+    //获取状态数量
+    GetFireAlarmDeviceStateNum(){
+      this.$axios.get(this.$api.GetFireAlarmDeviceStateNum,{params:this.page}).then(res=>{
+          this.buttonarr[1].num = res.result[0].value
+          this.buttonarr[2].num = res.result[1].value
+      })
+    },
+    //筛选状态
+    screen(text){
+       this.screensign = text;
+       this.page.DeviceState = text;
+       this.getList();
+    },
     gotodetails(text,item) {
       console.log("text",text,item)
       this.$router.push({
@@ -89,23 +135,32 @@ export default {
         }
       });
     },
+    //获取列表
     getList(success) {
       let x = arguments[0] instanceof Object;
       let p = this.page;
       if (!x) {
         p.SkipCount = 0;
         this.tableList = [];
+        this.$refs.baselist.loading = true;
+        this.$refs.baselist.finished = false;
       }
-      this.$axios
-        .get(this.$api.GetFireAlarmDeviceList, {
+      this.$axios.get(this.$api.GetFireAlarmDeviceList, 
+      {
           params: p
-        })
-        .then(res => {
+      }).then(res => {
           this.tableList = this.tableList.concat(res.result.items);
           p.total = res.result.totalCount;
-          x ? success(this.tableList.length, res.result.totalCount, p) : "";
-        });
-    }
+          x ? success(this.tableList.length, res.result.totalCount, p) : this.changelist(this.tableList.length, res.result.totalCount, p);
+      });
+    },
+    changelist(size, total = 5, page = {}){
+        page.SkipCount = size;
+        this.$refs.baselist.loading = false;
+        if (size >= total ) {
+            this.$refs.baselist.finished = true;
+        }
+    },
   }
 };
 </script>
@@ -113,6 +168,20 @@ export default {
 <style lang="scss">
   .fireneteork_box{
     padding: 12px;
+      .top_screen{
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0px;
+        .van-button{
+            height: 30px;
+            padding: 6px;
+            width: 100px;
+            line-height: 0px;
+        }
+        .van-button--default{
+            border: 1px solid rgb(110, 110, 110);
+        }
+      }
     .van-cell-group{
       background: #F8F8F8;
       .van-cell{
