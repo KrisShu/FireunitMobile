@@ -193,21 +193,31 @@ export default {
     },
     //刷新数据
     getrefresh(id,scope){
-      console.log("刷新数据",scope)
         const toast = this.$toast.loading({
             duration: 0, // 持续展示 toast
             forbidClick: true,
             message: '刷新数值中'
         });
-      console.log("刷新数据",id)
       this.$axios.get(this.$api.GetSingleElectricDeviceData,{params:{electricDeviceId:id}}).then(res=>{
         console.log("刷新数据成功",res)
         toast.clear();
         if(res.result.result){
           this.$toast('刷新数值成功');
-          this.getList();
+          this.tableList.forEach((item,index)=>{
+            if(item.deviceId == id){
+              // console.log("set");
+              // console.log(item);
+              this.$set(this.tableList[index],'state',res.result.deviceData.state)
+              this.$set(this.tableList[index],'l',res.result.deviceData.l)
+              this.$set(this.tableList[index],'l1',res.result.deviceData.l1)
+              this.$set(this.tableList[index],'l2',res.result.deviceData.l2)
+              this.$set(this.tableList[index],'l3',res.result.deviceData.l3)
+              this.$set(this.tableList[index],'n',res.result.deviceData.n)
+              this.$set(this.tableList[index],'a',res.result.deviceData.a)
+            }
+          })
         }else{
-         this.$toast('刷新数值超时，请稍后再试');
+         this.$toast('设备响应超时，请稍后再试');
         }
       }).catch(err=>{
          console.log("刷新数据失败",err)

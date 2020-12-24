@@ -10,7 +10,7 @@
 <script>
 export default {
   mounted(){
-    localStorage.setItem('version','防火单位1.0')
+    localStorage.setItem('version','防火单位1.0.1')
   }
 }
 </script>
